@@ -5,14 +5,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin/")
 add_definitions("-Wall")
 
 add_executable(genkfs
-    kfs/directory.c
-    kfs/file.c
-    kfs/filesystem.c
     main.c
-)
-
-include_directories(
-    kfs/
 )
 
 set(CMAKE_BUILD_TYPE Release)
