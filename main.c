@@ -10,17 +10,17 @@ struct {
 	char *model_dir;
 	uint8_t fat_start;
 	uint8_t dat_start;
+	FILE *rom;
 } context;
 
 void parse_context(int argc, char **argv) {
 	context.rom_file = context.model_dir = NULL;
-	fat_start = 0;
-	dat_start = 0x04;
 	const char *errorMessage = "Invalid usage - see `genkfs --help` or `man 1 genkfs` for more info.";
-	for (int i = 1; i < argc; i++) {
+	int i;
+	for (i = 1; i < argc; i++) {
 		if (*argv[i] == '-') {
-			if (strcasecmp(argv[i], "-d") || strcasecmp(argv[i], "--dat")) {
-				/* TODO - let user specify filesystem range */
+			if (strcasecmp(argv[i], "--help")) {
+				// TODO
 			} else {
 				fprintf(stderr, errorMessage);
 				exit(1);
@@ -40,6 +40,12 @@ void parse_context(int argc, char **argv) {
 		fprintf(stderr, errorMessage);
 		exit(1);
 	}
+	context.rom = fopen(context.rom_file, "rw");
+	fseek(context.rom, 0L, SEEK_END);
+	uint32_t length = ftell(context.rom);
+	fseek(context.rom, 0L, SEEK_SET);
+	context.dat_start = 0x04;
+	context.fat_start = length / 0x4000 - 0x9;
 }
 
 int main(int argc, char **argv) {
