@@ -58,14 +58,14 @@ void parse_context(int argc, char **argv) {
 	context.fat_start = length / PAGE_LENGTH - 0x9;
 }
 
-char* concat_path(char* parent, char* child) {
+char *concat_path(char* parent, char* child) {
 	int pl = strlen(parent);
 	int cl = strlen(child);
 	if (parent[pl - 1] != '/') {
 		pl++;
 	}
 	int len = pl + cl;
-	char* a = malloc(len + 1);
+	char *a = malloc(len + 1);
 	memcpy(a, parent, pl);
 	memcpy(a + pl, child, cl);
 	a[pl - 1] = '/';
@@ -100,7 +100,7 @@ void write_block(FILE *rom, FILE *file, uint16_t sectionId) {
 	free(block);
 }
 
-void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t* sectionId) {
+void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 	uint16_t pSID = 0xFFFF;
 	fseek(file, 0L, SEEK_SET);
 	while (length > 0) {
@@ -141,7 +141,7 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t* sectionId) {
 	}
 }
 
-void write_recursive(char* model, FILE *rom, uint16_t *parentId, uint16_t *sectionId, uint32_t *fatptr) {
+void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *sectionId, uint32_t *fatptr) {
 	struct dirent *entry;
 	DIR *dir = opendir(model);
 	uint16_t parent = *parentId;
@@ -207,7 +207,7 @@ void write_recursive(char* model, FILE *rom, uint16_t *parentId, uint16_t *secti
 	closedir(dir);
 }
 
-void write_filesystem(char* model, FILE *rom, uint8_t fat_start, uint8_t dat_start) {
+void write_filesystem(char *model, FILE *rom, uint8_t fat_start, uint8_t dat_start) {
 	uint16_t parentId = 0;
 	uint16_t sectionId = (dat_start << 5) | 1;
 	uint32_t fatptr = (fat_start + 1) * PAGE_LENGTH;
