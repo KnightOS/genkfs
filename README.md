@@ -15,11 +15,15 @@ You can use a few options to tweak this:
 * `-f <page>` or `--fat <page>` - given the page in hex, this can specify an alternative
   page to begin the FAT on.
 
+The model directory will be written to the new filesystem as the root.
+
 ## Installation
 
-On Windows, do the following under cygwin after installing cmake and your favorite C
-compiler.
+For Linux/Mac/etc:
 
     $ cmake .
     $ make
     # make install # as root
+
+On Windows, do the following under cygwin after installing cmake and your favorite C
+compiler.
