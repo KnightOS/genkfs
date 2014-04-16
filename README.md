@@ -25,5 +25,5 @@ For Linux/Mac/etc:
     $ make
     # make install # as root
 
-On Windows, do the following under cygwin after installing cmake and your favorite C
+On Windows, do the same thing under cygwin after installing cmake and your favorite C
 compiler.
