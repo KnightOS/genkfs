@@ -89,6 +89,58 @@ void write_fat(FILE *rom, uint8_t *entry, uint16_t length, uint32_t *fatptr) {
 	fflush(rom);
 }
 
+void write_block(FILE *rom, FILE *file, uint16_t sectionId) {
+	uint16_t flashPage = sectionId >> 5;
+	uint16_t index = sectionId & 0x3F;
+	fseek(rom, flashPage * 0x4000 + index * 0x100, SEEK_SET);
+	uint8_t *block = malloc(0x100);
+	int len = fread(block, 1, 0x100, file);
+	fwrite(block, len, 1, rom);
+	fflush(rom);
+	free(block);
+}
+
+void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t* sectionId) {
+	uint16_t pSID = 0xFFFF;
+	fseek(file, 0L, SEEK_SET);
+	while (length > 0) {
+		/* Prep */
+		uint16_t flashPage = *sectionId >> 5;
+		uint8_t index = *sectionId & 0x3F;
+		uint16_t nSID = 0xFFFF;
+		uint32_t header_addr = 0x4000 * flashPage + index * 4;
+		uint64_t page_map_addr = 0x4000 * flashPage;
+		index++;
+		if (index > 0x3F) {
+			index = 1;
+			flashPage++;
+		}
+		if (length > 0x100) {
+			nSID = (flashPage << 5) | index;
+		}
+
+		/* Section header */
+		fseek(rom, header_addr, SEEK_SET);
+		pSID &= 0x7FFF; // Mark this section in use
+		fwrite(&pSID, sizeof(pSID), 1, rom);
+		fwrite(&nSID, sizeof(nSID), 1, rom);
+		pSID |= 0x8000;
+		fseek(rom, page_map_addr, SEEK_SET);
+
+		/* Block data */
+		write_block(rom, file, *sectionId);
+		fflush(rom);
+
+		if (length < 0x100) {
+			length = 0;
+		} else {
+			length -= 0x100;
+		}
+		pSID = *sectionId;
+		*sectionId = (flashPage << 5) | index;
+	}
+}
+
 void write_recursive(char* model, FILE *rom, uint16_t *parentId, uint16_t *sectionId, uint32_t *fatptr) {
 	struct dirent *entry;
 	DIR *dir = opendir(model);
@@ -138,11 +190,13 @@ void write_recursive(char* model, FILE *rom, uint16_t *parentId, uint16_t *secti
 			fentry[6] = len & 0xFF;
 			fentry[7] = (len >> 8) & 0xFF;
 			fentry[8] = (len >> 16) & 0xFF;
-			fentry[9] = 0; // Section ID
-			fentry[10] = 0;
+			fentry[9] = *sectionId & 0xFF;
+			fentry[10] = *sectionId >> 7;
 			memcpy(fentry + 11, entry->d_name, strlen(entry->d_name) + 1);
 			memrev(fentry, elen + 3);
 			write_fat(rom, fentry, elen + 3, fatptr);
+
+			write_dat(rom, file, len, sectionId);
 
 			free(fentry);
 		} else if (entry->d_type == DT_LNK) {
@@ -153,9 +207,9 @@ void write_recursive(char* model, FILE *rom, uint16_t *parentId, uint16_t *secti
 	closedir(dir);
 }
 
-void write_filesystem(char* model, FILE *rom, uint8_t fat_start) {
+void write_filesystem(char* model, FILE *rom, uint8_t fat_start, uint8_t dat_start) {
 	uint16_t parentId = 0;
-	uint16_t sectionId = 0;
+	uint16_t sectionId = (dat_start << 5) | 1;
 	uint32_t fatptr = (fat_start + 1) * PAGE_LENGTH;
 	write_recursive(model, rom, &parentId, &sectionId, &fatptr);
 }
@@ -175,14 +229,21 @@ int main(int argc, char **argv) {
 	memset(blank_page, 0xFF, PAGE_LENGTH);
 	fseek(context.rom, context.dat_start * PAGE_LENGTH, SEEK_SET);
 	for (p = context.dat_start; p <= context.fat_start; ++p) {
+		if (p <= context.fat_start - 4) {
+			blank_page[0] = 'K';
+		} else {
+			blank_page[0] = 0xFF;
+		}
 		fwrite(blank_page, PAGE_LENGTH, 1, context.rom);
 	}
 	fflush(context.rom);
 
-	write_filesystem(context.model_dir, context.rom, context.fat_start);
+	write_filesystem(context.model_dir, context.rom, context.fat_start, context.dat_start);
 
 	fflush(context.rom);
 	fclose(context.rom);
 	free(blank_page);
+
+	printf("Filesystem successfully written to %s.\n", context.rom_file);
 	return 0;
 }
