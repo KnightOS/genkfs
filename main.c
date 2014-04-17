@@ -7,6 +7,7 @@
 #include <dirent.h>
 
 #define PAGE_LENGTH 0x4000
+#define BLOCK_SIZE 0x100
 #define KFS_FILE_ID 0x7F
 #define KFS_DIR_ID 0xBF
 
@@ -90,11 +91,11 @@ void write_fat(FILE *rom, uint8_t *entry, uint16_t length, uint32_t *fatptr) {
 }
 
 void write_block(FILE *rom, FILE *file, uint16_t sectionId) {
-	uint16_t flashPage = sectionId >> 5;
+	uint16_t flashPage = sectionId >> 6;
 	uint16_t index = sectionId & 0x3F;
-	fseek(rom, flashPage * 0x4000 + index * 0x100, SEEK_SET);
-	uint8_t *block = malloc(0x100);
-	int len = fread(block, 1, 0x100, file);
+	fseek(rom, flashPage * PAGE_LENGTH + index * BLOCK_SIZE, SEEK_SET);
+	uint8_t *block = malloc(BLOCK_SIZE);
+	int len = fread(block, 1, BLOCK_SIZE, file);
 	fwrite(block, len, 1, rom);
 	fflush(rom);
 	free(block);
@@ -105,18 +106,17 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 	fseek(file, 0L, SEEK_SET);
 	while (length > 0) {
 		/* Prep */
-		uint16_t flashPage = *sectionId >> 5;
+		uint16_t flashPage = *sectionId >> 6;
 		uint8_t index = *sectionId & 0x3F;
 		uint16_t nSID = 0xFFFF;
-		uint32_t header_addr = 0x4000 * flashPage + index * 4;
-		uint64_t page_map_addr = 0x4000 * flashPage;
+		uint32_t header_addr = PAGE_LENGTH * flashPage + index * 4;
 		index++;
 		if (index > 0x3F) {
 			index = 1;
 			flashPage++;
 		}
-		if (length > 0x100) {
-			nSID = (flashPage << 5) | index;
+		if (length > BLOCK_SIZE) {
+			nSID = (flashPage << 6) | index;
 		}
 
 		/* Section header */
@@ -124,20 +124,18 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 		pSID &= 0x7FFF; // Mark this section in use
 		fwrite(&pSID, sizeof(pSID), 1, rom);
 		fwrite(&nSID, sizeof(nSID), 1, rom);
-		pSID |= 0x8000;
-		fseek(rom, page_map_addr, SEEK_SET);
 
 		/* Block data */
 		write_block(rom, file, *sectionId);
 		fflush(rom);
 
-		if (length < 0x100) {
+		if (length < BLOCK_SIZE) {
 			length = 0;
 		} else {
-			length -= 0x100;
+			length -= BLOCK_SIZE;
 		}
 		pSID = *sectionId;
-		*sectionId = (flashPage << 5) | index;
+		*sectionId = (flashPage << 6) | index;
 	}
 }
 
@@ -167,6 +165,7 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 
 			write_recursive(path, rom, parentId, sectionId, fatptr);
 			free(path);
+			free(fentry);
 		} else if (entry->d_type == DT_REG) {
 			uint16_t elen = strlen(entry->d_name) + 9;
 			uint8_t *fentry = malloc(elen + 3);
@@ -191,7 +190,7 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 			fentry[7] = (len >> 8) & 0xFF;
 			fentry[8] = (len >> 16) & 0xFF;
 			fentry[9] = *sectionId & 0xFF;
-			fentry[10] = *sectionId >> 7;
+			fentry[10] = *sectionId >> 8;
 			memcpy(fentry + 11, entry->d_name, strlen(entry->d_name) + 1);
 			memrev(fentry, elen + 3);
 			write_fat(rom, fentry, elen + 3, fatptr);
@@ -209,7 +208,7 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 
 void write_filesystem(char *model, FILE *rom, uint8_t fat_start, uint8_t dat_start) {
 	uint16_t parentId = 0;
-	uint16_t sectionId = (dat_start << 5) | 1;
+	uint16_t sectionId = (dat_start << 6) | 1;
 	uint32_t fatptr = (fat_start + 1) * PAGE_LENGTH;
 	write_recursive(model, rom, &parentId, &sectionId, &fatptr);
 }
