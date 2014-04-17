@@ -4,11 +4,10 @@ Writes [KFS filesystems](http://www.knightos.org/documentation/kfs.html) into RO
 
 ## Usage
 
-    $ genkfs [options...] <rom file> <model directory>
+    $ genkfs <rom file> <model directory>
 
 genkfs will assume you want to write the filesystem to the maximum size acceptable for
 KnightOS, which is 0x04-0xXX, where 0xXX is the last non-protected sector of the device.
-You can use a few options to tweak this:
 
 The model directory will be written to the new filesystem as the root.
 
