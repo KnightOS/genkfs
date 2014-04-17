@@ -19,14 +19,19 @@ struct {
 	FILE *rom;
 } context;
 
+void show_help() {
+	printf("Usage: genkfs <rom file> <model directory>\n");
+}
+
 void parse_context(int argc, char **argv) {
 	context.rom_file = context.model_dir = NULL;
-	const char *errorMessage = "Invalid usage - see `genkfs --help` or `man 1 genkfs` for more info.";
+	const char *errorMessage = "Invalid usage - see `genkfs --help`";
 	int i;
 	for (i = 1; i < argc; i++) {
 		if (*argv[i] == '-') {
-			if (strcasecmp(argv[i], "--help")) {
-				// TODO
+			if (strcasecmp(argv[i], "--help") == 0) {
+				show_help();
+				exit(0);
 			} else {
 				fprintf(stderr, errorMessage);
 				exit(1);
