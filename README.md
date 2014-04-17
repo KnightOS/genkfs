@@ -10,12 +10,9 @@ genkfs will assume you want to write the filesystem to the maximum size acceptab
 KnightOS, which is 0x04-0xXX, where 0xXX is the last non-protected sector of the device.
 You can use a few options to tweak this:
 
-* `-d <page>` or `--dat <page>` - given the page in hex, this can specify an alternative
-  page to begin the DAT on.
-* `-f <page>` or `--fat <page>` - given the page in hex, this can specify an alternative
-  page to begin the FAT on.
-
 The model directory will be written to the new filesystem as the root.
+
+TODO: Support placing the filesystem at arbituary areas in the ROM.
 
 ## Installation
 
