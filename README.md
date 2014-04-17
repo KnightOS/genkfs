@@ -26,4 +26,5 @@ For Linux/Mac/etc:
     # make install # as root
 
 On Windows, do the same thing under cygwin after installing cmake and your favorite C
-compiler.
+compiler. You can also [download binaries](https://github.com/KnightOS/genkfs/releases)
+from the releases page.
