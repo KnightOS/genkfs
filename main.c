@@ -25,7 +25,7 @@ void show_help() {
 
 void parse_context(int argc, char **argv) {
 	context.rom_file = context.model_dir = NULL;
-	const char *errorMessage = "Invalid usage - see `genkfs --help`";
+	const char *errorMessage = "Invalid usage - see `genkfs --help`\n";
 	int i;
 	for (i = 1; i < argc; i++) {
 		if (*argv[i] == '-') {
