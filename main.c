@@ -119,6 +119,9 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 		if (index > 0x3F) {
 			index = 1;
 			flashPage++;
+			/* Write the magic number */
+			fseek(rom, flashPage * PAGE_LENGTH, SEEK_SET);
+			fprintf(rom, "KFS");
 		}
 		if (length > BLOCK_SIZE) {
 			nSID = (flashPage << 6) | index;
@@ -215,6 +218,10 @@ void write_filesystem(char *model, FILE *rom, uint8_t fat_start, uint8_t dat_sta
 	uint16_t parentId = 0;
 	uint16_t sectionId = (dat_start << 6) | 1;
 	uint32_t fatptr = (fat_start + 1) * PAGE_LENGTH;
+	/* Write the first DAT page's magic number */
+	fseek(rom, dat_start * PAGE_LENGTH, SEEK_SET);
+	fprintf(rom, "KFS");
+	fflush(rom);
 	write_recursive(model, rom, &parentId, &sectionId, &fatptr);
 }
 
