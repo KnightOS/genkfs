@@ -96,8 +96,8 @@ void write_fat(FILE *rom, uint8_t *entry, uint16_t length, uint32_t *fatptr) {
 }
 
 void write_block(FILE *rom, FILE *file, uint16_t sectionId) {
-	uint16_t flashPage = sectionId >> 6;
-	uint16_t index = sectionId & 0x3F;
+	uint16_t flashPage = sectionId >> 8;
+	uint16_t index = sectionId & 0xFF;
 	fseek(rom, flashPage * PAGE_LENGTH + index * BLOCK_SIZE, SEEK_SET);
 	uint8_t *block = malloc(BLOCK_SIZE);
 	int len = fread(block, 1, BLOCK_SIZE, file);
@@ -184,7 +184,7 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 				fprintf(stderr, "Error: %s is larger than the maximum file size.\n", path);
 				exit(1);
 			}
-			printf("Adding %s...\n", path);
+			printf("Adding %s at %04X...\n", path, *sectionId);
 			uint32_t len = (uint32_t)ftell(file);
 			free(path);
 
@@ -216,7 +216,7 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 
 void write_filesystem(char *model, FILE *rom, uint8_t fat_start, uint8_t dat_start) {
 	uint16_t parentId = 0;
-	uint16_t sectionId = (dat_start << 6) | 1;
+	uint16_t sectionId = (dat_start << 8) | 1;
 	uint32_t fatptr = (fat_start + 1) * PAGE_LENGTH;
 	/* Write the first DAT page's magic number */
 	fseek(rom, dat_start * PAGE_LENGTH, SEEK_SET);
