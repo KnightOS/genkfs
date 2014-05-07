@@ -1,7 +1,7 @@
 /////
 vim:set ts=4 sw=4 tw=82 noet:
 /////
-mktiupgrade (1)
+genkfs (1)
 ==============
 
 Name
