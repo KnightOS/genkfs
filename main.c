@@ -112,7 +112,7 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 	while (length > 0) {
 		/* Prep */
 		uint16_t flashPage = *sectionId >> 8;
-		uint8_t index = *sectionId & 0x3F;
+		uint8_t index = *sectionId & 0xFF;
 		uint16_t nSID = 0xFFFF;
 		uint32_t header_addr = PAGE_LENGTH * flashPage + index * 4;
 		index++;
