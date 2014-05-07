@@ -20,7 +20,19 @@ struct {
 } context;
 
 void show_help() {
-	printf("Usage: genkfs <rom file> <model directory>\n");
+	printf(
+		"genkfs - Writes KFS filesystems into ROM dumps\n"
+		"\n"
+		"Usage: genkfs input model\n"
+		"See `man 1 genkfs` for details.\n"
+		"\n"
+		"input should be the ROM file to write to, and model should be a local\n"
+		"directory that will be copied to root on the new filesystem.\n"
+		"\n"
+		"Examples:\n"
+		"\tTo write ./temp to / on example.rom:\n"
+		"\t\tgenkfs example.rom ./temp"
+	);
 }
 
 void parse_context(int argc, char **argv) {
@@ -184,7 +196,7 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 				fprintf(stderr, "Error: %s is larger than the maximum file size.\n", path);
 				exit(1);
 			}
-			printf("Adding %s at %04X...\n", path, *sectionId);
+			printf("Adding %s...\n", path);
 			uint32_t len = (uint32_t)ftell(file);
 			free(path);
 
