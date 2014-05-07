@@ -18,7 +18,7 @@ ADD_CUSTOM_TARGET(man ALL)
 ADD_CUSTOM_COMMAND(
   TARGET man
   SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/genkfs.1.txt
-  COMMAND a2x --doctype manpage --format manpage ${CMAKE_CURRENT_SOURCE_DIR}/genkfs.1.txt 
+  COMMAND a2x --no-xmllint --doctype manpage --format manpage ${CMAKE_CURRENT_SOURCE_DIR}/genkfs.1.txt 
   OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/genkfs.1
 )
 

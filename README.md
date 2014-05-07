@@ -23,4 +23,4 @@ For Linux/Mac/etc:
 
 On Windows, do the same thing under cygwin after installing cmake and your favorite C
 compiler. You can also [download binaries](https://github.com/KnightOS/genkfs/releases)
-from the releases page.
+from the releases page. On cygwin, install asciidoc.
