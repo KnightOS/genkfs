@@ -111,7 +111,7 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 	fseek(file, 0L, SEEK_SET);
 	while (length > 0) {
 		/* Prep */
-		uint16_t flashPage = *sectionId >> 6;
+		uint16_t flashPage = *sectionId >> 8;
 		uint8_t index = *sectionId & 0x3F;
 		uint16_t nSID = 0xFFFF;
 		uint32_t header_addr = PAGE_LENGTH * flashPage + index * 4;
@@ -124,7 +124,7 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 			fprintf(rom, "KFS");
 		}
 		if (length > BLOCK_SIZE) {
-			nSID = (flashPage << 6) | index;
+			nSID = (flashPage << 8) | index;
 		}
 
 		/* Section header */
@@ -143,7 +143,7 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 			length -= BLOCK_SIZE;
 		}
 		pSID = *sectionId;
-		*sectionId = (flashPage << 6) | index;
+		*sectionId = (flashPage << 8) | index;
 	}
 }
 
