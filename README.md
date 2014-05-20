@@ -15,7 +15,7 @@ TODO: Support placing the filesystem at arbituary areas in the ROM.
 
 ## Installation
 
-For Linux/Mac/etc:
+For Linux/Mac/etc, install cmake, make, asciidoc, and a C compiler, then:
 
     $ cmake .
     $ make
