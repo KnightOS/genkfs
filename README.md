@@ -20,12 +20,12 @@ instructions.
 
 Synopsis
 --------
-'genkfs' _input_ _model_
+genkfs *input* *model*
 
 Description
 -----------
 
-_input_ is the ROM file you would like to write the filesystem to. _model_ is a
+*input* is the ROM file you would like to write the filesystem to. *model* is a
 path to a directory that will be copied into / on the new filesystem.
 
 Examples
