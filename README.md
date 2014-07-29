@@ -1,26 +1,44 @@
-# genkfs
+genkfs
+======
 
-Writes [KFS filesystems](http://www.knightos.org/documentation/kfs.html) into ROM files.
+genkfs - Writes KFS filesystems into ROM dumps
 
-## Usage
+Installation
+------------
 
-    $ genkfs <rom file> <model directory>
+**Linux, Mac**:
 
-genkfs will assume you want to write the filesystem to the maximum size acceptable for
-KnightOS, which is 0x04-0xXX, where 0xXX is the last non-protected sector of the device.
+1. Install cmake and asciidoc
+2. `cmake .`
+3. `make`
+4. `make install`
 
-The model directory will be written to the new filesystem as the root.
+**Windows**
 
-TODO: Support placing the filesystem at arbituary areas in the ROM.
+Install cygwin with cmake, asciidoc, gcc, and make. Then, follow the Linux
+instructions.
 
-## Installation
+Synopsis
+--------
+'genkfs' _input_ _model_
 
-For Linux/Mac/etc, install cmake, make, asciidoc, and a C compiler, then:
+Description
+-----------
 
-    $ cmake .
-    $ make
-    # make install # as root
+_input_ is the ROM file you would like to write the filesystem to. _model_ is a
+path to a directory that will be copied into / on the new filesystem.
 
-On Windows, do the same thing under cygwin after installing cmake and your favorite C
-compiler. You can also [download binaries](https://github.com/KnightOS/genkfs/releases)
-from the releases page. On cygwin, install asciidoc.
+Examples
+--------
+
+`genkfs input.rom ./temp`
+
+Creates a KFS filesystem in input.rom and copies the contents of ./temp to the
+root of the new filesystem.
+
+Authors
+-------
+
+Maintained by Drew DeVault <sir@cmpwn.com>, who is assisted by other open
+source contributors. For more information about genkfs development, see
+<https://github.com/KnightOS/genkfs>.
