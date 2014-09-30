@@ -230,14 +230,14 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 			target[r] = '\0';
 			printf("Adding link from %s to %s...\n", path, target);
 
-			uint16_t elen = strlen(entry->d_name) + strlen(target) + 4;
+			uint16_t elen = strlen(entry->d_name) + strlen(target) + 5;
 			uint8_t *sentry = malloc(elen + 3);
 			sentry[0] = KFS_SYM_ID;
 			sentry[1] = elen & 0xFF;
 			sentry[2] = elen >> 8;
 			sentry[3] = parent & 0xFF;
 			sentry[4] = parent >> 8;
-			sentry[5] = strlen(entry->d_name + 1);
+			sentry[5] = strlen(entry->d_name) + 1;
 			memcpy(sentry + 6, entry->d_name, strlen(entry->d_name) + 1);
 			memcpy(sentry + 6 + strlen(entry->d_name) + 1, target, strlen(target) + 1);
 			memrev(sentry, elen + 3);
