@@ -5,11 +5,14 @@
 #include <strings.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define PAGE_LENGTH 0x4000
 #define BLOCK_SIZE 0x100
 #define KFS_FILE_ID 0x7F
 #define KFS_DIR_ID 0xBF
+#define KFS_SYM_ID 0xDF
 
 struct {
 	char *rom_file;
@@ -219,8 +222,30 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 
 			free(fentry);
 		} else if (entry->d_type == DT_LNK) {
-			fprintf(stderr, "Error: Unable to handle %s (symlinks are not currently supported)\n", entry->d_name);
-			exit(1);
+			struct stat ls;
+			char *path = concat_path(model, entry->d_name);
+			lstat(path, &ls);
+			char *target = malloc(ls.st_size + 1);
+			ssize_t r = readlink(path, target, ls.st_size + 1);
+			target[r] = '\0';
+			printf("Adding link from %s to %s...\n", path, target);
+
+			uint16_t elen = strlen(entry->d_name) + strlen(target) + 4;
+			uint8_t *sentry = malloc(elen + 3);
+			sentry[0] = KFS_SYM_ID;
+			sentry[1] = elen & 0xFF;
+			sentry[2] = elen >> 8;
+			sentry[3] = parent & 0xFF;
+			sentry[4] = parent >> 8;
+			sentry[5] = strlen(entry->d_name + 1);
+			memcpy(sentry + 6, entry->d_name, strlen(entry->d_name) + 1);
+			memcpy(sentry + 6 + strlen(entry->d_name) + 1, target, strlen(target) + 1);
+			memrev(sentry, elen + 3);
+			write_fat(rom, sentry, elen + 3, fatptr);
+
+			free(sentry);
+			free(target);
+			free(path);
 		}
 	}
 	closedir(dir);

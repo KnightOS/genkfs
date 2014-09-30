@@ -1,5 +1,5 @@
-genkfs
-======
+genkfs (1)
+==========
 
 genkfs - Writes KFS filesystems into ROM dumps
 

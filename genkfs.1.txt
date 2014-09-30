@@ -18,6 +18,21 @@ Description
 _input_ is the ROM file you would like to write the filesystem to. _model_ is a
 path to a directory that will be copied into / on the new filesystem.
 
+Symbolic Links
+--------------
+
+Symbolic links are supported but have special constraints. Instead of making
+symlinks that make sense in the context of your model filesystem, make symlinks
+that make sense in the context of the final filesystem. That is, if you want the
+resulting filesystem to have a symlink from /var/link to /var/target, you should
+make a link in your model that points to /var/target, **even if your local
+filesystem does not have anything interesting at /var/target**.
+
+In other words, to make the final filesystem have that link from /var/link to
+/var/target, run this command on _model/_:
+
+	ln -s /var/target model/var/link
+
 Examples
 --------
 
