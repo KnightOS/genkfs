@@ -167,7 +167,7 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 	DIR *dir = opendir(model);
 	uint16_t parent = *parentId;
 	while ((entry = readdir(dir))) {
-		if (entry->d_type == DT_DIR && entry->d_name[0] != '.') {
+		if (entry->d_type == DT_DIR && strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
 			uint16_t elen = strlen(entry->d_name) + 6;
 			uint8_t *fentry = malloc(elen + 3);
 			char *path = concat_path(model, entry->d_name);
