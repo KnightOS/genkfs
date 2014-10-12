@@ -8,8 +8,13 @@ add_executable(genkfs
     main.c
 )
 
-install(PROGRAMS bin/genkfs
-    DESTINATION bin)
+if(WIN32)
+  install(PROGRAMS bin/genkfs.exe
+      DESTINATION bin)
+else()
+  install(PROGRAMS bin/genkfs
+      DESTINATION bin)
+endif()
 
 set(CMAKE_BUILD_TYPE Release)
 
