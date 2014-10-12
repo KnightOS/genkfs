@@ -8,7 +8,7 @@ add_executable(genkfs
     main.c
 )
 
-if(WIN32)
+if(WIN32 OR CYGWIN)
   install(PROGRAMS bin/genkfs.exe
       DESTINATION bin)
 else()
