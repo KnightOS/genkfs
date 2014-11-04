@@ -4,7 +4,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin/")
 add_definitions("-Wall")
 
 if(EMSCRIPTEN)
-  set(CMAKE_EXE_LINKER_FLAGS "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/module.js")
+  set(CMAKE_EXE_LINKER_FLAGS "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/module.js -s EXPORTED_FUNCTIONS=\"['_main', '_emscripten_main']\"")
   set(CMAKE_C_FLAGS "-O3")
 endif()
 
