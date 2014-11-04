@@ -38,7 +38,7 @@ void show_help() {
 	);
 }
 
-void parse_context(int argc, char **argv) {
+int parse_context(int argc, char **argv) {
 	context.rom_file = context.model_dir = NULL;
 	const char *errorMessage = "Invalid usage - see `genkfs --help`\n";
 	int i;
@@ -46,10 +46,10 @@ void parse_context(int argc, char **argv) {
 		if (*argv[i] == '-') {
 			if (strcasecmp(argv[i], "--help") == 0) {
 				show_help();
-				exit(0);
+				return 0;
 			} else {
 				fprintf(stderr, errorMessage);
-				exit(1);
+				return 1;
 			}
 		} else {
 			if (context.rom_file == NULL) {
@@ -58,18 +58,18 @@ void parse_context(int argc, char **argv) {
 				context.model_dir = argv[i];
 			} else {
 				fprintf(stderr, errorMessage);
-				exit(1);
+				return 1;
 			}
 		}
 	}
 	if (context.rom_file == NULL || context.model_dir == NULL) {
 		fprintf(stderr, errorMessage);
-		exit(1);
+		return 1;
 	}
 	context.rom = fopen(context.rom_file, "r+");
 	if (context.rom == NULL) {
 		fprintf(stderr, "Unable to open %s.\n", context.rom_file);
-		exit(1);
+		return 1;
 	}
 	fseek(context.rom, 0L, SEEK_END);
 	uint32_t length = ftell(context.rom);
@@ -77,6 +77,7 @@ void parse_context(int argc, char **argv) {
 
 	context.dat_start = 0x04;
 	context.fat_start = length / PAGE_LENGTH - 0x9;
+	return -1;
 }
 
 char *concat_path(char* parent, char* child) {
@@ -263,12 +264,15 @@ void write_filesystem(char *model, FILE *rom, uint8_t fat_start, uint8_t dat_sta
 }
 
 int main(int argc, char **argv) {
-	parse_context(argc, argv);
+	int ret = parse_context(argc, argv);
+	if (ret != -1) {
+		return ret;
+	}
 	DIR *model = opendir(context.model_dir);
 	if (model == NULL) {
 		fprintf(stderr, "Unable to open %s.\n", context.model_dir);
 		fclose(context.rom);
-		exit(1);
+		return 1;
 	}
 	closedir(model); // Re-opened later
 
