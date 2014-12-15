@@ -34,7 +34,7 @@ void show_help() {
 		"\n"
 		"Examples:\n"
 		"\tTo write ./temp to / on example.rom:\n"
-		"\t\tgenkfs example.rom ./temp"
+		"\t\tgenkfs example.rom ./temp\n"
 	);
 }
 
@@ -167,7 +167,10 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 	struct dirent *entry;
 	DIR *dir = opendir(model);
 	uint16_t parent = *parentId;
-	while ((entry = readdir(dir))) {
+	struct dirent **nameList = NULL;
+	int numEntries = scandir(model, &nameList, NULL, alphasort);
+	for (int i = 0; i < numEntries; i++) {
+		entry = nameList[i];
 		if (entry->d_type == DT_DIR && strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
 			uint16_t elen = strlen(entry->d_name) + 6;
 			uint8_t *fentry = malloc(elen + 3);
@@ -248,7 +251,9 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 			free(target);
 			free(path);
 		}
+		free(nameList[i]);
 	}
+	free(nameList);
 	closedir(dir);
 }
 
