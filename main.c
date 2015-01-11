@@ -169,7 +169,8 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 	uint16_t parent = *parentId;
 	struct dirent **nameList = NULL;
 	int numEntries = scandir(model, &nameList, NULL, alphasort);
-	for (int i = 0; i < numEntries; i++) {
+	int i;
+	for (i = 0; i < numEntries; i++) {
 		entry = nameList[i];
 		if (entry->d_type == DT_DIR && strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
 			uint16_t elen = strlen(entry->d_name) + 6;
