@@ -13,10 +13,10 @@ add_executable(genkfs
 )
 
 if(WIN32 OR CYGWIN)
-  install(PROGRAMS bin/genkfs.exe
+  install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/bin/genkfs.exe
       DESTINATION bin)
 else()
-  install(PROGRAMS bin/genkfs
+  install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/bin/genkfs
       DESTINATION bin)
 endif()
 
@@ -27,7 +27,7 @@ ADD_CUSTOM_TARGET(man ALL)
 ADD_CUSTOM_COMMAND(
   TARGET man
   SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/genkfs.1.txt
-  COMMAND a2x --no-xmllint --doctype manpage --format manpage ${CMAKE_CURRENT_SOURCE_DIR}/genkfs.1.txt 
+  COMMAND a2x --no-xmllint --doctype manpage --format manpage ${CMAKE_CURRENT_SOURCE_DIR}/genkfs.1.txt -D ${CMAKE_CURRENT_BINARY_DIR}
   OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/genkfs.1
 )
 
