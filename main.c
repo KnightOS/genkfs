@@ -258,15 +258,26 @@ void write_recursive(char *model, FILE *rom, uint16_t *parentId, uint16_t *secti
 	closedir(dir);
 }
 
-void write_filesystem(char *model, FILE *rom, uint8_t fat_start, uint8_t dat_start) {
+// Returns the number of data pages (low byte) and fat pages (high byte) written.
+uint16_t write_filesystem(char *model, FILE *rom, uint8_t fat_start, uint8_t dat_start) {
 	uint16_t parentId = 0;
 	uint16_t sectionId = (dat_start << 8) | 1;
 	uint32_t fatptr = (fat_start + 1) * PAGE_LENGTH;
+	uint32_t fatptrStart = fatptr;
 	/* Write the first DAT page's magic number */
 	fseek(rom, dat_start * PAGE_LENGTH, SEEK_SET);
 	fprintf(rom, "KFS");
 	fflush(rom);
 	write_recursive(model, rom, &parentId, &sectionId, &fatptr);
+	div_t d = div(fatptrStart - fatptr, PAGE_LENGTH);
+	uint16_t result = d.quot;
+	if (d.rem) {
+		result++;
+	}
+	result <<= 8;
+	// sectionId's high byte is a page number
+	result += (sectionId >> 8) - dat_start + 1;
+	return result;
 }
 
 int main(int argc, char **argv) {
@@ -296,12 +307,22 @@ int main(int argc, char **argv) {
 	}
 	fflush(context.rom);
 
-	write_filesystem(context.model_dir, context.rom, context.fat_start, context.dat_start);
+	uint16_t result = write_filesystem(
+		context.model_dir, context.rom, context.fat_start, context.dat_start);
 
 	fflush(context.rom);
 	fclose(context.rom);
 	free(blank_page);
 
 	printf("Filesystem successfully written to %s.\n", context.rom_file);
+	printf("Indexes of written data pages: ");
+	for (int i=0; i<(result & 0xff); i++) {
+		printf("%02x ", context.dat_start + i);
+	}
+	printf("\nIndexes of written FAT pages: ");
+	for (int i=0; i<(result >> 8); i++) {
+		printf("%02x ", context.fat_start - i);
+	}
+	printf("\nThe rest of the pages (except kernels' 00-03) are empty.\n");
 	return 0;
 }
