@@ -48,7 +48,7 @@ int parse_context(int argc, char **argv) {
 				show_help();
 				return 0;
 			} else {
-				fprintf(stderr, errorMessage);
+				fprintf(stderr, "%s \n", errorMessage);
 				return 1;
 			}
 		} else {
@@ -57,13 +57,13 @@ int parse_context(int argc, char **argv) {
 			} else if (context.model_dir == NULL) {
 				context.model_dir = argv[i];
 			} else {
-				fprintf(stderr, errorMessage);
+				fprintf(stderr, "%s \n", errorMessage);
 				return 1;
 			}
 		}
 	}
 	if (context.rom_file == NULL || context.model_dir == NULL) {
-		fprintf(stderr, errorMessage);
+		fprintf(stderr, "%s\n", errorMessage);
 		return 1;
 	}
 	context.rom = fopen(context.rom_file, "r+");
