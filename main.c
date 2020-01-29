@@ -13,6 +13,7 @@
 #define KFS_FILE_ID 0x7F
 #define KFS_DIR_ID 0xBF
 #define KFS_SYM_ID 0xDF
+#define KFS_VERSION 0
 
 struct {
 	char *rom_file;
@@ -138,6 +139,7 @@ void write_dat(FILE *rom, FILE *file, uint32_t length, uint16_t *sectionId) {
 			/* Write the magic number */
 			fseek(rom, flashPage * PAGE_LENGTH, SEEK_SET);
 			fprintf(rom, "KFS");
+			fputc(0xFF << KFS_VERSION, rom);
 		}
 		if (length > BLOCK_SIZE) {
 			nSID = (flashPage << 8) | index;
