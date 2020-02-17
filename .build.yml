@@ -1,0 +1,13 @@
+image: archlinux
+packages:
+  - cmake
+  - asciidoc
+sources:
+  - https://github.com/KnightOS/genkfs
+environment:
+  project: genkfs
+tasks:
+  - test: |
+      cd ${project}
+      cmake .
+      make
