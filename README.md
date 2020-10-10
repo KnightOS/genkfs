@@ -2,6 +2,8 @@
 
 genkfs - Writes KFS filesystems into ROM dumps
 
+[![builds.sr.ht status](https://builds.sr.ht/~maxleiter/genkfs.svg)](https://builds.sr.ht/~maxleiter/genkfs?)
+
 ## Installation
 
 **Linux, Mac**:
