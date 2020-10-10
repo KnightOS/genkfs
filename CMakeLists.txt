@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.5)
 
 project(genkfs C)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic -std=c99 -D_POSIX_C_SOURCE=200809 -D_BSD_SOURCE -D_DEFAULT_SOURCE")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic -std=c99 -D_POSIX_C_SOURCE=200809 -D_BSD_SOURCE -D_DEFAULT_SOURCE -D_DARWIN_C_SOURCE")
 
 if (NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE RELEASE)
