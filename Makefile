@@ -6,8 +6,8 @@ bin/genkfs:main.o
 	mkdir -p bin/
 	$(CC) $(CFLAGS) $^ -o $@
 
-bin/genkfs.1:genkfs.1.txt
-	a2x --no-xmllint --doctype manpage --format manpage genkfs.1.txt -v -D bin/
+bin/genkfs.1:genkfs.1.scdoc
+	scdoc < genkfs.1.scdoc > bin/genkfs.1
 
 DESTDIR=/usr/local
 BINDIR=$(DESTDIR)/bin/

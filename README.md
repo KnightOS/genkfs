@@ -8,7 +8,7 @@ genkfs - Writes KFS filesystems into ROM dumps
 
 **Linux, Mac, etc.**
 
-Install make, asciidoc, and a C compiler, then:
+Install make, scdoc, and a C compiler, then:
 
 	$ make
 	# make install # as root

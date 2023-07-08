@@ -1,25 +1,19 @@
-/////
-vim:set ts=4 sw=4 tw=82 noet:
-/////
-genkfs (1)
-==========
+GENKFS(1)
 
-Name
-----
+# NAME
+
 genkfs - Writes KFS filesystems into ROM dumps
 
-Synopsis
---------
-'genkfs' _input_ _model_
+# SYNOPSIS
 
-Description
------------
+*genkfs* _input_ _model_
+
+# DESCRIPTION
 
 _input_ is the ROM file you would like to write the filesystem to. _model_ is a
 path to a directory that will be copied into / on the new filesystem.
 
-Symbolic Links
---------------
+# SYMBOLIC LINKS
 
 Symbolic links are supported but have special constraints. Instead of making
 symlinks that make sense in the context of your model filesystem, make symlinks
@@ -31,18 +25,18 @@ filesystem does not have anything interesting at /var/target**.
 In other words, to make the final filesystem have that link from /var/link to
 /var/target, run this command on _model/_:
 
-	ln -s /var/target model/var/link
+```
+ln -s /var/target model/var/link
+```
 
-Examples
---------
+# EXAMPLES
 
-genkfs input.rom ./temp::
+*genkfs input.rom ./temp*
 	Creates a KFS filesystem in input.rom and copies the contents of ./temp to the
 	root of the new filesystem.
 
-Authors
--------
+# AUTHORS
 
 Maintained by Drew DeVault <sir@cmpwn.com>, who is assisted by other open
 source contributors. For more information about genkfs development, see
-<https://github.com/KnightOS/genkfs>.
+https://github.com/KnightOS/genkfs.
