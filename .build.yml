@@ -1,6 +1,6 @@
 image: archlinux
 packages:
-  - asciidoc
+  - scdoc
 sources:
   - https://github.com/KnightOS/genkfs
 environment:
